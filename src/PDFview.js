@@ -18,21 +18,51 @@ class PDFview extends Component {
     this.props.getPageAmount(numPages);
     this.props.onPDFReady();
   }
- 
+  
+
+
   render() {
     const { numPages } = this.state;
     const pageNumber=this.props.pageNumber;
     return (
-      <div>
+      <div className="PDFReader">
         <Document
-          file="https://cdn.courseact.com/application/2017/12/26/6ebc2d57-e812-49c8-ac54-695fd19ab43e.pdf"
+          file={this.props.url}
           onLoadSuccess={this.onDocumentLoad}
         >
           <Page pageNumber={pageNumber} />
         </Document>
         <p>Page {pageNumber} of {numPages}</p>
+        <div style={{display:"flex",
+                      width:"100%",
+                      justifyContent:'center'}}>
+            <div style={
+               styles.controlBtn
+              }
+              onClick={this.props.setPDFPagePrevious} 
+              >Previous</div>
+            <div style={
+               styles.controlBtn
+              } 
+              onClick={this.props.setPDFPageNext}
+              >Next</div>
+        </div>
+      
       </div>
     );
+  }
+}
+
+const styles={
+  controlBtn:{
+    display:'flex',
+    background:'#2d8dd6',
+    color:'white',
+    height:'80px',
+    width:'50%',
+    alignItems: 'center',
+    justifyContent:'center',
+    margin:'1px',
   }
 }
 
