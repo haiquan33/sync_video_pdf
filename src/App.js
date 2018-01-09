@@ -5,7 +5,7 @@ import { Document, Page } from 'react-pdf';
 import PDFview from './PDFview.js';
 import VideoPlayer from './VideoPlayer.js';
 import Header from './Header.js';
-
+import moment from 'moment';
 
 class App extends Component {
   constructor(props) {
@@ -26,7 +26,10 @@ class App extends Component {
       videoReady: false,
       pdfReady: false,
       PDFPageChanged:false,
-      changeVideoTime:0
+      changeVideoTime:0,
+      TimeStampList:[{"id":"new","time":"00:00:10","slide":"1","des":"asd"},
+                     {"id":"H1V7WufEG","time":"00:00:20","slide":"2","des":"sad"},
+                     {"id":"r13m-OzVz","time":"00:00:30","slide":"3","des":"asrwer"}]
 
     }
     this.getDuration = this.getDuration.bind(this);
@@ -41,6 +44,7 @@ class App extends Component {
     this.setPDFPageNext=this.setPDFPageNext.bind(this);
 
     this.setPDFPagePrevious=this.setPDFPagePrevious.bind(this);
+    this.GetPagenumberfromTime=this.GetPagenumberfromTime.bind(this);
   }
 
   getDuration(duration) {
@@ -77,8 +81,39 @@ class App extends Component {
       });
    
   }
+
+  //get video current time and return the page number base on timestamplist
+  GetPagenumberfromTime(){
+    let cur=this.state.duration*this.state.played;
+    let min=this.state.duration;
+    let currentPage=1;
+
+    //get the right slide to sync
+    for (let stamp of this.state.TimeStampList){
+     
+      let sec=Math.floor(moment.duration(stamp.time).asSeconds());
+     
+      //if this timestamp is before the current time
+      if (cur-sec>0){
+        //find the most closest timestamp to this current time
+        console.log("currentpage",sec);
+          if (cur-sec<min){
+              min=cur-sec;
+              currentPage=Number(stamp.slide);
+              
+              
+          }
+      }
+    }
+   // console.log("currentpage",currentPage);
+    //this.setState({currentPage});
+    return currentPage;
+  }
   syncPDFReader() {
-    var currentPage=Math.floor(this.state.played*this.state.pageAmount);
+  //  var currentPage=Math.floor(this.state.played*this.state.pageAmount);
+   var currentPage=this.GetPagenumberfromTime();
+   console.log("current page",currentPage);
+   // var currentPage=GetPagenumberfromTime();//this.state.played;
     if (currentPage==0) currentPage=1;
     this.setState({currentPage});
   }
@@ -87,7 +122,7 @@ class App extends Component {
       this.setState({PDFPageChanged:true,changeVideoTime,played:changeVideoTime})
   }
   getSyncTime() {
-    console.log("loaded");
+   
   }
 
   onSyncVideoDone(){
@@ -99,6 +134,7 @@ class App extends Component {
     return (
 
       <div className="App">
+     
         <Header />
         <div className="Media-container">
           
